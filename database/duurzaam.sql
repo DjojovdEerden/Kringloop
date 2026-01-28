@@ -54,6 +54,18 @@ CREATE TABLE `artikel` (
  
 -- --------------------------------------------------------
 
+-- Tabelstructuur voor tabel `rollen`
+
+-- --------------------------------------------------------
+
+CREATE TABLE `rollen` (
+  `id` int NOT NULL,
+  `naam` varchar(50) NOT NULL,
+  `beschrijving` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
 -- Tabelstructuur voor tabel `gebruiker`
 
 -- --------------------------------------------------------
@@ -66,7 +78,7 @@ CREATE TABLE `gebruiker` (
 
   `wachtwoord` varchar(255) NOT NULL,
 
-  `rollen` text NOT NULL,
+  `rol_id` int DEFAULT NULL,
 
   `is_geverifieerd` tinyint(1) NOT NULL
 
@@ -181,6 +193,10 @@ CREATE TABLE `voorraad` (
 ALTER TABLE `categorie`
 
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `rollen`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `naam` (`naam`);
  
 ALTER TABLE `artikel`
 
@@ -190,7 +206,8 @@ ALTER TABLE `artikel`
  
 ALTER TABLE `gebruiker`
 
-  ADD PRIMARY KEY (`id`);
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `rol_id` (`rol_id`);
  
 ALTER TABLE `klant`
 
@@ -231,6 +248,9 @@ ALTER TABLE `voorraad`
 ALTER TABLE `categorie`
 
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
+
+ALTER TABLE `rollen`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
  
 ALTER TABLE `artikel`
 
@@ -267,6 +287,10 @@ ALTER TABLE `artikel`
   ADD CONSTRAINT `artikel_ibfk_1`
 
   FOREIGN KEY (`categorie_id`) REFERENCES `categorie` (`id`);
+
+ALTER TABLE `gebruiker`
+  ADD CONSTRAINT `fk_gebruiker_rol`
+  FOREIGN KEY (`rol_id`) REFERENCES `rollen` (`id`) ON DELETE SET NULL;
  
 ALTER TABLE `planning`
 
@@ -299,6 +323,13 @@ ALTER TABLE `voorraad`
   FOREIGN KEY (`status_id`) REFERENCES `status` (`id`);
  
 COMMIT;
+
+-- Voeg rollen toe
+INSERT INTO rollen (id, naam, beschrijving) VALUES
+(1, 'directie', 'Directie - Volledige toegang tot alle functionaliteiten'),
+(2, 'medewerker', 'Medewerker - Toegang tot magazijn, voorraad en algemene functionaliteiten'),
+(3, 'winkelpersoneel', 'Winkelpersoneel - Toegang tot verkoop en klant gerelateerde functionaliteiten'),
+(4, 'chauffeur', 'Chauffeur - Toegang tot planning en transport gerelateerde functionaliteiten');
 
 -- Voeg dummy gegevens toe aan de categorie-tabel
 INSERT INTO categorie (id, categorie) VALUES

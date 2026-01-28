@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/database/config/database.php';
+require_once 'includes/db.php';
 
 // Sessie starten
 session_start();
@@ -22,16 +22,16 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
   } else {
     try {
       // Gebruiker ophalen met opgegeven gebruikersnaam
-      $stmt = $pdo->prepare(query: "SELECT * FROM gebruiker WHERE gebruikersnaam = :username");
-      $stmt->bindParam(param: ':username', var: $username);
+      $stmt = $pdo->prepare("SELECT g.*, r.naam as rol_naam FROM gebruiker g LEFT JOIN rollen r ON g.rol_id = r.id WHERE g.gebruikersnaam = :username");
+      $stmt->bindParam(':username', $username);
       $stmt->execute();
-      $user = $stmt->fetch(mode: PDO::FETCH_ASSOC);
+      $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
       // Controleren of gebruiker bestaat en wachtwoord klopt
-      if ($user && password_verify(password: $password, hash: $user['wachtwoord'])) {
+      if ($user && password_verify($password, $user['wachtwoord'])) {
         // session gegevens istellen
         $_SESSION['user_id'] = $user['id'];
-        $_SESSION['role'] = $user['rollen'];
+        $_SESSION['role'] = $user['rol_naam'] ?? 'medewerker';
       } else {
         if ($user) {
           $error = "Incorrect password";

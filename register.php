@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/database/config/database.php';
+require_once 'includes/db.php';
 
 // variabelen 
 $roles = [];
@@ -8,8 +8,8 @@ $message = '';
 
 // haalt de rollen op uit de database van de rollen tabel
 try {
-    $rolesStmt = $pdo->query(query: "SELECT id, naam FROM roles ORDER BY naam");
-    $roles = $rolesStmt->fetchAll(mode: PDO::FETCH_ASSOC);
+    $rolesStmt = $pdo->query("SELECT id, naam FROM rollen ORDER BY naam");
+    $roles = $rolesStmt->fetchAll(PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $message = "Fout bij laden van rollen: " . $e->getMessage();
 }
@@ -29,27 +29,21 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         try {
             // controleer of gebruikersnaam al bestaat
-            $checkStmt = $pdo->prepare(query: "SELECT 1 FROM gebruiker WHERE gebruikersnaam = ? LIMIT 1");
+            $checkStmt = $pdo->prepare("SELECT 1 FROM gebruiker WHERE gebruikersnaam = ? LIMIT 1");
             $checkStmt->execute(params: [$gebruikersnaam]);
             if ($checkStmt->fetch()) {
                 $message = "Gebruikersnaam bestaat al. Kies een andere.";
             } else {
-                // haalt de rol op basis van de gegeven role_ID
-                $roleStmt = $pdo->prepare(query: "SELECT naam FROM roles WHERE id = ?");
-                $roleStmt->execute(params: [(int)$roleId]);
-                $roleRow = $roleStmt->fetch(mode: PDO::FETCH_ASSOC);
-                $roleNaam = $roleRow ? $roleRow['naam'] : '';
-
                 // voorkomt dubbele gebruikersnamen 
-                $idStmt = $pdo->query(query: "SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM gebruiker");
+                $idStmt = $pdo->query("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM gebruiker");
                 $nextId = (int)$idStmt->fetchColumn();
 
                 // voegt de nieuwe gebruiker toe aan de database in de gebruiker tabel 
                 $stmt = $pdo->prepare(
-                    query: "INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, role_id, rollen, is_geverifieerd)
-                     VALUES (?, ?, ?, ?, ?, 0)"
+                    "INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd)
+                     VALUES (?, ?, ?, ?, 0)"
                 );
-                $stmt->execute(params: [$nextId, $gebruikersnaam, $hashedPassword, (int)$roleId, $roleNaam]);
+                $stmt->execute([$nextId, $gebruikersnaam, $hashedPassword, (int)$roleId]);
 
                 $message = "Registratie gelukt!";
             }
