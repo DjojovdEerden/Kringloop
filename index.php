@@ -10,7 +10,7 @@ include 'includes/header.php';
             <div class="card card-custom">
                 <h3 class="mb-3">Ritten</h3>
                 <p class="text-muted">beschrijving</p>
-                <a href="ritten.php" class="btn btn-primary-custom mt-auto">Ga naar ritten</a>
+                <a href="admin/list_planning.php" class="btn btn-primary-custom mt-auto">Ga naar ritten planning</a>
             </div>
         </div>
 
