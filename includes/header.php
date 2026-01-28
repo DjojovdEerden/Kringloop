@@ -38,7 +38,6 @@
                 </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item">
-                        <a class="nav-link btn btn-outline-light" href="login.php">Aanmelden</a>
                     </li>
                 </ul>
             </div>
