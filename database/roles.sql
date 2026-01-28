@@ -1,0 +1,6 @@
+USE duurzaam;
+
+CREATE TABLE roles (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    naam VARCHAR(50) NOT NULL UNIQUE
+) ENGINE=InnoDB;
