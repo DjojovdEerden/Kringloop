@@ -18,4 +18,7 @@ class Database {
         return $this->conn;
     }
 }
+
+$database = new Database();
+$pdo = $database->getConnection();
 ?>
