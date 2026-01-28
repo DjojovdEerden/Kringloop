@@ -112,7 +112,9 @@ CREATE TABLE `planning` (
 
   `ophalen_of_bezorgen` enum('ophalen','bezorgen') NOT NULL,
 
-  `afspraak_op` datetime NOT NULL
+  `afspraak_op` datetime NOT NULL,
+
+  `omschrijving` text NOT NULL
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
@@ -197,8 +199,6 @@ ALTER TABLE `klant`
 ALTER TABLE `planning`
 
   ADD PRIMARY KEY (`id`),
-
-  ADD KEY `artikel_id` (`artikel_id`),
 
   ADD KEY `klant_id` (`klant_id`);
  
@@ -300,4 +300,23 @@ ALTER TABLE `voorraad`
  
 COMMIT;
 
- 
+-- Voeg dummy gegevens toe aan de categorie-tabel
+INSERT INTO categorie (id, categorie) VALUES
+(1, 'Meubels'),
+(2, 'Vervoer');
+
+-- Voeg dummy gegevens toe aan de artikelen-tabel
+INSERT INTO artikel (id, categorie_id, naam, prijs_ex_btw) VALUES
+(1, 1, 'Fiets', 100.00),
+(2, 1, 'Stoel', 50.00);
+
+-- Voeg dummy gegevens toe aan de klant-tabel
+INSERT INTO klant (id, naam, adres, plaats, telefoon, email) VALUES
+(1, 'Jan Jansen', 'Hoofdstraat 1', 'Amsterdam', '0612345678', 'jan@example.com'),
+(2, 'Piet Pietersen', 'Dorpsstraat 2', 'Rotterdam', '0687654321', 'piet@example.com');
+
+-- Voeg dummy gegevens toe aan de planning-tabel
+INSERT INTO planning (id, artikel_id, klant_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES
+(1, 1, 1, 'AB-123-CD', 'ophalen', '2026-02-01 10:00:00', 'Ophalen van fiets'),
+(2, 2, 2, 'EF-456-GH', 'bezorgen', '2026-02-02 14:00:00', 'Bezorgen van stoel');
+
