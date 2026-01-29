@@ -7,15 +7,15 @@ if ($_POST) {
     try {
         // POST data ophalen
         $artikel_id = $_POST['artikel_id'];
-        $klant_id = $_POST['klant_id'];
+        $persoon_id = $_POST['persoon_id'];
         $kenteken = $_POST['kenteken'];
         $ophalen_of_bezorgen = $_POST['ophalen_of_bezorgen'];
         $afspraak_op = $_POST['afspraak_op'];
         $omschrijving = $_POST['omschrijving'];
 
         // Planning toevoegen aan database
-        $stmt = $pdo->prepare("INSERT INTO planning (artikel_id, klant_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES (?, ?, ?, ?, ?, ?)");
-        $stmt->execute([$artikel_id, $klant_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op, $omschrijving]);
+        $stmt = $pdo->prepare("INSERT INTO planning (artikel_id, persoon_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES (?, ?, ?, ?, ?, ?)");
+        $stmt->execute([$artikel_id, $persoon_id, $kenteken, $ophalen_of_bezorgen, $afspraak_op, $omschrijving]);
         
         // Success bericht
         $success_message = "Planning succesvol toegevoegd!";
@@ -24,6 +24,10 @@ if ($_POST) {
         $error_message = "Fout bij toevoegen: " . $e->getMessage();
     }
 }
+
+// Haal personen en artikelen op voor dropdowns
+$personen = $pdo->query("SELECT id, voornaam, achternaam, type FROM personen WHERE actief = 1 ORDER BY voornaam, achternaam")->fetchAll(PDO::FETCH_ASSOC);
+$artikelen = $pdo->query("SELECT id, naam FROM artikel ORDER BY naam")->fetchAll(PDO::FETCH_ASSOC);
 
 // Set pagina titel
 $pageTitle = 'Nieuwe Planning';
@@ -46,13 +50,28 @@ include '../includes/header.php';
         <div class="card-body">
             <form method="POST">
                 <div class="row mb-3">
+                    <!-- Artikel en persoon selectie -->
                     <div class="col-md-6">
-                        <label for="artikel_id" class="form-label">Artikel ID:</label>
-                        <input type="number" name="artikel_id" id="artikel_id" class="form-control" required>
+                        <label for="artikel_id" class="form-label">Artikel:</label>
+                        <select name="artikel_id" id="artikel_id" class="form-select" required>
+                            <option value="">Selecteer artikel...</option>
+                            <?php foreach ($artikelen as $artikel): ?>
+                                <!-- Elk artikel als optie -->
+                                <option value="<?php echo $artikel['id']; ?>"><?php echo $artikel['naam']; ?></option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                     <div class="col-md-6">
-                        <label for="klant_id" class="form-label">Klant ID:</label>
-                        <input type="number" name="klant_id" id="klant_id" class="form-control" required>
+                        <label for="persoon_id" class="form-label">Persoon:</label>
+                        <select name="persoon_id" id="persoon_id" class="form-select" required>
+                            <option value="">Selecteer persoon...</option>
+                            <?php foreach ($personen as $persoon): ?>
+                                <!-- Elk persoon als optie -->
+                                <option value="<?php echo $persoon['id']; ?>">
+                                    <?php echo $persoon['voornaam'] . ' ' . $persoon['achternaam'] . ' (' . $persoon['type'] . ')'; ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
                     </div>
                 </div>
                 <!-- Transport en tijdstip velden -->

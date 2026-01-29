@@ -3,12 +3,12 @@
 require_once '../includes/db.php';
 
 // Haal alle planning data op
-// Haal alle planning data op
 $stmt = $pdo->query('
-    SELECT p.*, k.naam AS klant_naam, k.adres AS klant_adres, a.naam AS artikel_naam
+    SELECT p.*, pe.voornaam, pe.achternaam, pe.adres, pe.type, a.naam AS artikel_naam
     FROM planning p
-    JOIN klant k ON p.klant_id = k.id
+    JOIN personen pe ON p.persoon_id = pe.id
     JOIN artikel a ON p.artikel_id = a.id
+    ORDER BY p.afspraak_op ASC
 ');
 // Converteer naar array
 $planningen = $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -37,31 +37,38 @@ include '../includes/header.php';
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
-                        <th>Artikel ID</th>
-                        <th>Klant ID</th>
+                        <th>Artikel</th>
+                        <th>Persoon</th>
+                        <th>Type</th>
                         <th>Kenteken</th>
                         <th>Ophalen/Bezorgen</th>
                         <th>Afspraak op</th>
-                        <th>Artikelnummer</th>
                         <th>Omschrijving</th>
-                        <th>Klant Naam</th>
-                        <th>Klant Adres</th>
+                        <th>Adres</th>
                     </tr>
                 </thead>
                 <!-- Planning records weergeven -->
                 <tbody>
                     <?php foreach ($planningen as $planning): ?>
                         <tr>
+                            <!-- Planning ID -->
                             <td><?php echo $planning['id']; ?></td>
-                            <td><?php echo $planning['artikel_id']; ?></td>
-                            <td><?php echo $planning['klant_id']; ?></td>
+                            <!-- Artikel naam -->
+                            <td><?php echo $planning['artikel_naam']; ?></td>
+                            <!-- Persoon volledige naam -->
+                            <td><?php echo $planning['voornaam'] . ' ' . $planning['achternaam']; ?></td>
+                            <!-- Type persoon -->
+                            <td><?php echo $planning['type']; ?></td>
+                            <!-- Auto kenteken -->
                             <td><?php echo $planning['kenteken']; ?></td>
+                            <!-- Ophalen of bezorgen -->
                             <td><?php echo $planning['ophalen_of_bezorgen']; ?></td>
+                            <!-- Afspraak datum en tijd -->
                             <td><?php echo $planning['afspraak_op']; ?></td>
-                            <td><?php echo isset($planning['artikel_naam']) ? $planning['artikel_naam'] : 'N/A'; ?></td>
+                            <!-- Beschrijving -->
                             <td><?php echo $planning['omschrijving']; ?></td>
-                            <td><?php echo $planning['klant_naam']; ?></td>
-                            <td><?php echo $planning['klant_adres']; ?></td>
+                            <!-- Adres van persoon -->
+                            <td><?php echo $planning['adres']; ?></td>
                         </tr>
                     <?php endforeach; ?>
                 </tbody>
