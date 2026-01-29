@@ -1,4 +1,11 @@
 <?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: login.php');
+    exit;
+}
+
 $pageTitle = 'Kringloop centrum - Home';
 include 'includes/header.php';
 ?>
@@ -10,7 +17,7 @@ include 'includes/header.php';
             <div class="card card-custom">
                 <h3 class="mb-3">Ritten</h3>
                 <p class="text-muted">beschrijving</p>
-                <a href="ritten.php" class="btn btn-primary-custom mt-auto">Ga naar ritten</a>
+                <a href="admin/list_planning.php" class="btn btn-primary-custom mt-auto">Ga naar ritten planning</a>
             </div>
         </div>
 

@@ -70,6 +70,18 @@ CREATE TABLE `artikel` (
  
 -- --------------------------------------------------------
 
+-- Tabelstructuur voor tabel `rollen`
+
+-- --------------------------------------------------------
+
+CREATE TABLE `rollen` (
+  `id` int NOT NULL,
+  `naam` varchar(50) NOT NULL,
+  `beschrijving` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
 -- Tabelstructuur voor tabel `gebruiker`
 
 -- --------------------------------------------------------
@@ -82,7 +94,7 @@ CREATE TABLE `gebruiker` (
 
   `wachtwoord` varchar(255) NOT NULL,
 
-  `rollen` text NOT NULL,
+  `rol_id` int DEFAULT NULL,
 
   `is_geverifieerd` tinyint(1) NOT NULL
 
@@ -90,24 +102,23 @@ CREATE TABLE `gebruiker` (
  
 -- --------------------------------------------------------
 
--- Tabelstructuur voor tabel `klant`
+-- Tabelstructuur voor tabel `personen`
 
 -- --------------------------------------------------------
- 
-CREATE TABLE `klant` (
 
+CREATE TABLE `personen` (
   `id` int NOT NULL,
-
-  `naam` varchar(255) NOT NULL,
-
+  `type` enum('klant','leverancier') NOT NULL DEFAULT 'klant',
+  `voornaam` varchar(100) NOT NULL,
+  `achternaam` varchar(100) NOT NULL,
   `adres` varchar(255) NOT NULL,
-
-  `plaats` varchar(255) NOT NULL,
-
-  `telefoon` varchar(255) NOT NULL,
-
-  `email` varchar(255) NOT NULL
-
+  `plaats` varchar(100) NOT NULL,
+  `postcode` varchar(10) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `telefoon` varchar(20) NOT NULL,
+  `geboortedatum` date DEFAULT NULL,
+  `datum_ingevoerd` datetime DEFAULT CURRENT_TIMESTAMP,
+  `actief` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
 -- --------------------------------------------------------
@@ -122,13 +133,15 @@ CREATE TABLE `planning` (
 
   `artikel_id` int NOT NULL,
 
-  `klant_id` int NOT NULL,
+  `persoon_id` int NOT NULL,
 
   `kenteken` varchar(255) NOT NULL,
 
   `ophalen_of_bezorgen` enum('ophalen','bezorgen') NOT NULL,
 
-  `afspraak_op` datetime NOT NULL
+  `afspraak_op` datetime NOT NULL,
+
+  `omschrijving` text NOT NULL
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
@@ -156,7 +169,7 @@ CREATE TABLE `verkopen` (
 
   `id` int NOT NULL,
 
-  `klant_id` int NOT NULL,
+  `persoon_id` int NOT NULL,
 
   `artikel_id` int NOT NULL,
 
@@ -195,6 +208,15 @@ CREATE TABLE `voorraad` (
 ALTER TABLE `categorie`
 
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `rollen`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `naam` (`naam`);
+
+ALTER TABLE `personen`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `type` (`type`),
+  ADD KEY `email` (`email`);
  
 ALTER TABLE `artikel`
 
@@ -202,21 +224,11 @@ ALTER TABLE `artikel`
 
   ADD KEY `categorie_id` (`categorie_id`);
  
-ALTER TABLE `gebruiker`
-
-  ADD PRIMARY KEY (`id`);
- 
-ALTER TABLE `klant`
-
-  ADD PRIMARY KEY (`id`);
- 
 ALTER TABLE `planning`
 
   ADD PRIMARY KEY (`id`),
 
-  ADD KEY `artikel_id` (`artikel_id`),
-
-  ADD KEY `klant_id` (`klant_id`);
+  ADD KEY `persoon_id` (`persoon_id`);
  
 ALTER TABLE `status`
 
@@ -226,7 +238,7 @@ ALTER TABLE `verkopen`
 
   ADD PRIMARY KEY (`id`),
 
-  ADD KEY `klant_id` (`klant_id`),
+  ADD KEY `persoon_id` (`persoon_id`),
 
   ADD KEY `artikel_id` (`artikel_id`);
  
@@ -247,12 +259,14 @@ ALTER TABLE `voorraad`
 ALTER TABLE `categorie`
 
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
- 
-ALTER TABLE `artikel`
 
+ALTER TABLE `rollen`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+ALTER TABLE `personen`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
  
-ALTER TABLE `klant`
+ALTER TABLE `artikel`
 
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
  
@@ -283,6 +297,10 @@ ALTER TABLE `artikel`
   ADD CONSTRAINT `artikel_ibfk_1`
 
   FOREIGN KEY (`categorie_id`) REFERENCES `categorie` (`id`);
+
+ALTER TABLE `gebruiker`
+  ADD CONSTRAINT `fk_gebruiker_rol`
+  FOREIGN KEY (`rol_id`) REFERENCES `rollen` (`id`) ON DELETE SET NULL;
  
 ALTER TABLE `planning`
 
@@ -292,13 +310,13 @@ ALTER TABLE `planning`
 
   ADD CONSTRAINT `planning_ibfk_2`
 
-  FOREIGN KEY (`klant_id`) REFERENCES `klant` (`id`);
+  FOREIGN KEY (`persoon_id`) REFERENCES `personen` (`id`);
  
 ALTER TABLE `verkopen`
 
   ADD CONSTRAINT `verkopen_ibfk_1`
 
-  FOREIGN KEY (`klant_id`) REFERENCES `klant` (`id`),
+  FOREIGN KEY (`persoon_id`) REFERENCES `personen` (`id`),
 
   ADD CONSTRAINT `verkopen_ibfk_2`
 
@@ -316,9 +334,7 @@ ALTER TABLE `voorraad`
  
 COMMIT;
 
-<<<<<<< Updated upstream
  
-=======
 -- Voeg rollen toe
 INSERT INTO rollen (id, naam, beschrijving) VALUES
 (1, 'directie', 'Directie - Volledige toegang tot alle functionaliteiten'),
@@ -422,4 +438,3 @@ INSERT INTO planning (id, artikel_id, persoon_id, kenteken, ophalen_of_bezorgen,
  
 COMMIT;
 
->>>>>>> Stashed changes
