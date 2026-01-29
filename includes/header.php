@@ -33,8 +33,21 @@ if (session_status() === PHP_SESSION_NONE) {
                             <li><a class="dropdown-item" href="/Kringloop/admin/list_planning.php">Planning Overzicht</a></li>
                         </ul>
                     </li>
-                    <li class="nav-item"><a class="nav-link" href="/Kringloop/voorraad.php">Voorraad</a></li>
-                    <li class="nav-item"><a class="nav-link" href="/Kringloop/beheer.php">Beheer</a></li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="/Kringloop/voorraad.php?type=magazijn" id="voorraadDropdown" role="button" data-bs-toggle="dropdown">Voorraad</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Kringloop/voorraad.php?type=magazijn">Magazijn beheer</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/voorraad.php?type=winkel">Winkel voorraad beheren</a></li>
+                        </ul>
+                    </li>
+                    <?php if (isset($_SESSION['user_id']) && (int)($_SESSION['rol_id'] ?? 0) === 1): ?>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" href="#" id="beheerDropdown" role="button" data-bs-toggle="dropdown">Beheer</a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" href="/Kringloop/register.php">Register new user</a></li>
+                            </ul>
+                        </li>
+                    <?php endif; ?>
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Admin</a>
                         <ul class="dropdown-menu">
