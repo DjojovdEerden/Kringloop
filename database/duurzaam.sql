@@ -346,8 +346,8 @@ INSERT INTO rollen (id, naam, beschrijving) VALUES
 -- Directie account (wachtwoord: admin123)
 -- Medewerker account (wachtwoord: medewerker123)
 INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd) VALUES
-(1, 'directie', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1),
-(2, 'medewerker', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, 1);
+(1, 'directie', '$2y$10$N5ewJrn6VpgJGcC4gEsKfuJ70erbtAbY1vdOt/hTUEft0iMj6G4PK', 1, 1),
+(2, 'medewerker', '$2y$10$5ixLUAik9bNlBOwILZARZutmoWQ36PAFz2ym39E6YkzH9.bFSdyXm', 2, 1);
 
 -- Voeg dummy gegevens toe aan personen-tabel
 INSERT INTO personen (id, type, voornaam, achternaam, adres, plaats, postcode, email, telefoon, geboortedatum) VALUES
