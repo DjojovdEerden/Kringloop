@@ -1,10 +1,10 @@
 <?php
-require_once 'config/db.php';
+require_once 'includes/db.php';
 require_once 'classes/Artikel.php';
 require_once 'classes/Categorie.php';
 
-$artikel = new Artikel($db);
-$categorieObj = new Categorie($db);
+$artikel = new Artikel($pdo);
+$categorieObj = new Categorie($pdo);
 $categorien = $categorieObj->getAlleCategorien();
 
 $zoekterm = isset($_GET['zoekterm']) ? trim($_GET['zoekterm']) : '';
@@ -23,193 +23,70 @@ if(isset($_GET['verwijderd']) && $_GET['verwijderd'] == 'success') {
 if(isset($_GET['toegevoegd']) && $_GET['toegevoegd'] == 'success') {
     $bericht = 'Artikel succesvol toegevoegd!';
 }
+
+// Set pagina titel
+$pageTitle = 'Artikelen Beheer';
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artikelen Overzicht</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        h1 {
-            color: #333;
-        }
-        .bericht {
-            padding: 10px;
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .knop-container {
-            margin-bottom: 20px;
-        }
-        .knop {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .knop:hover {
-            background-color: #0056b3;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 10px;
-            font-size: 14px;
-        }
-        th {
-            background-color: #f8f9fa;
-            padding: 12px;
-            text-align: left;
-            border-bottom: 2px solid #dee2e6;
-        }
-        td {
-            padding: 12px;
-            border-bottom: 1px solid #dee2e6;
-        }
-        tr:hover {
-            background-color: #f8f9fa;
-        }
-        .verwijder-knop {
-            background-color: #dc3545;
-            color: white;
-            padding: 5px 15px;
-            text-decoration: none;
-            border-radius: 4px;
-            border: none;
-            cursor: pointer;
-        }
-        .verwijder-knop:hover {
-            background-color: #c82333;
-        }
-        .zoek-container {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-        .zoek-form {
-            display: flex;
-            gap: 10px;
-            align-items: flex-end;
-        }
-        .zoek-veld {
-            flex: 1;
-        }
-        .zoek-veld label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        .zoek-veld input,
-        .zoek-veld select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        .zoek-knop {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-        .zoek-knop:hover {
-            background-color: #218838;
-        }
-        .reset-knop {
-            background-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .reset-knop:hover {
-            background-color: #5a6268;
-        }
-        .categorie-badge {
-            display: inline-block;
-            padding: 4px 10px;
-            background-color: #3366CC;
-            color: white;
-            border-radius: 12px;
-            font-size: 0.85em;
-            font-weight: 600;
-        }
-        .subcategorie-text {
-            display: block;
-            font-size: 0.85em;
-            color: #6c757d;
-            margin-top: 3px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
+
+<!-- Artikelen beheer pagina -->
+<div class="container my-5">
+    <?php if(!empty($bericht)): ?>
+        <div class="alert alert-success"><?php echo $bericht; ?></div>
+    <?php endif; ?>
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Artikelen Beheer</h2>
+        <div>
+            <a href="artikel_toevoegen.php" class="btn btn-primary me-2">Nieuw Artikel</a>
+            <a href="categorie_toevoegen.php" class="btn btn-secondary">Nieuwe Categorie</a>
+        </div>
+    </div>
+
+    <!-- Zoek en filter sectie -->
+    <div class="card">
         <h1>Artikelen Overzicht</h1>
         
         <?php if($bericht != ''): ?>
-            <div class="bericht"><?php echo $bericht; ?></div>
+            <div class="alert alert-success"><?php echo $bericht; ?></div>
         <?php endif; ?>
 
-        <div class="zoek-container">
-            <form method="GET" class="zoek-form">
-                <div class="zoek-veld">
-                    <label for="zoekterm">Zoek op naam:</label>
-                    <input type="text" id="zoekterm" name="zoekterm" 
+        <div class="card">
+            <div class="card-body">
+            <!-- Zoek formulier -->
+            <form method="GET" class="row g-3 mb-4">
+                <div class="col-md-5">
+                    <label for="zoekterm" class="form-label">Zoek op naam:</label>
+                    <input type="text" id="zoekterm" name="zoekterm" class="form-control"
                            placeholder="Bijv. tafel, stoel..." 
-                           value="<?php echo htmlspecialchars($zoekterm); ?>">
+                           value="<?php echo $zoekterm; ?>">
                 </div>
                 
-                <div class="zoek-veld">
-                    <label for="categorie">Filter op categorie:</label>
-                    <select id="categorie" name="categorie">
+                <div class="col-md-5">
+                    <label for="categorie" class="form-label">Filter op categorie:</label>
+                    <select id="categorie" name="categorie" class="form-select">
                         <option value="">-- Alle categorieën --</option>
                         <?php foreach($categorien as $cat): ?>
                             <option value="<?php echo $cat['id']; ?>"
                                     <?php echo ($categorie_filter == $cat['id']) ? 'selected' : ''; ?>>
                                 <?php 
-                                    echo htmlspecialchars($cat['categorie']);
+                                    echo $cat['categorie'];
                                     if($cat['subcategorie']) {
-                                        echo ' - ' . htmlspecialchars($cat['subcategorie']);
+                                        echo ' - ' . $cat['subcategorie'];
                                     }
-                                    echo ' (' . htmlspecialchars($cat['code']) . ')';
+                                    echo ' (' . $cat['code'] . ')';
                                 ?>
                             </option>
                         <?php endforeach; ?>
                     </select>
                 </div>
                 
-                <button type="submit" class="zoek-knop">Zoeken</button>
-                <a href="artikelen.php" class="reset-knop">Reset</a>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">Zoeken</button>
+                </div>
             </form>
-        </div>
 
-        <div class="knop-container">
-            <a href="artikel_toevoegen.php" class="knop">+ Nieuw Artikel</a>
-            <a href="categorie_toevoegen.php" class="knop">+ Nieuwe Categorie</a>
-        </div>
+            <!-- Artikelen tabel -->
 
         <table>
             <thead>
@@ -240,16 +117,16 @@ if(isset($_GET['toegevoegd']) && $_GET['toegevoegd'] == 'success') {
                             <td>&euro; <?php echo number_format($item['prijs_ex_btw'], 2, ',', '.'); ?></td>
                             <td>
                                 <a href="artikel_verwijderen.php?id=<?php echo $item['id']; ?>" 
-                                   class="verwijder-knop"
-                                   onclick="return confirm('Weet je zeker dat je dit artikel wilt verwijderen?');">
-                                    Verwijderen
-                                </a>
+                                       class="btn btn-sm btn-danger"
+                                       onclick="return confirm('Weet je zeker dat je dit artikel wilt verwijderen?');">
+                                        Verwijderen
+                                    </a>
                             </td>
                         </tr>
                     <?php endforeach; ?>
                 <?php else: ?>
                     <tr>
-                        <td colspan="5" style="text-align: center; padding: 40px;">
+                        <td colspan="5" class="text-center text-muted py-4">
                             Geen artikelen gevonden
                         </td>
                     </tr>
@@ -257,5 +134,6 @@ if(isset($_GET['toegevoegd']) && $_GET['toegevoegd'] == 'success') {
             </tbody>
         </table>
     </div>
-</body>
-</html>
+</div>
+
+<?php include 'includes/footer.php'; ?>

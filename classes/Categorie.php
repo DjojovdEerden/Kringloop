@@ -4,15 +4,15 @@ class Categorie {
     public $categorie;
     public $subcategorie;
     public $code;
-    public $db;
+    public $pdo;
 
     public function __construct($database) {
-        $this->db = $database;
+        $this->pdo = $database;
     }
 
     public function getAlleCategorien() {
         $query = "SELECT * FROM categorie ORDER BY categorie ASC, subcategorie ASC";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -20,7 +20,7 @@ class Categorie {
     public function voegCategorieToe() {
         $query = "INSERT INTO categorie (categorie, subcategorie, code) 
                   VALUES (:categorie, :subcategorie, :code)";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':categorie', $this->categorie);
         $stmt->bindParam(':subcategorie', $this->subcategorie);
         $stmt->bindParam(':code', $this->code);
@@ -29,7 +29,7 @@ class Categorie {
 
     public function getCategorieNaam($id) {
         $query = "SELECT categorie, subcategorie FROM categorie WHERE id = :id";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':id', $id);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);

@@ -1,10 +1,10 @@
 <?php
-require_once 'config/db.php';
+require_once 'includes/db.php';
 require_once 'classes/Artikel.php';
 require_once 'classes/Categorie.php';
 
 $foutmeldingen = [];
-$categorieObj = new Categorie($db);
+$categorieObj = new Categorie($pdo);
 $categorien = $categorieObj->getAlleCategorien();
 
 if($_SERVER['REQUEST_METHOD'] == 'POST') {
@@ -26,7 +26,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if(count($foutmeldingen) == 0) {
-        $artikel = new Artikel($db);
+        $artikel = new Artikel($pdo);
         $artikel->naam = $naam;
         $artikel->categorie_id = $categorie_id;
         $artikel->prijs_ex_btw = $prijs;
@@ -39,136 +39,72 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         }
     }
 }
+
+// Set pagina titel
+$pageTitle = 'Nieuw Artikel Toevoegen';
+include 'includes/header.php';
 ?>
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Artikel Toevoegen</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f5f5f5;
-        }
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background-color: white;
-            padding: 20px;
-            border-radius: 5px;
-        }
-        h1 {
-            color: #333;
-        }
-        .foutmelding {
-            padding: 10px;
-            background-color: #f8d7da;
-            color: #721c24;
-            border: 1px solid #f5c6cb;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-        .form-groep {
-            margin-bottom: 15px;
-        }
-        label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-        input[type="text"],
-        input[type="number"],
-        select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-        }
-        textarea {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            min-height: 80px;
-            font-family: Arial, sans-serif;
-        }
-        .knop {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-right: 10px;
-        }
-        .knop:hover {
-            background-color: #0056b3;
-        }
-        .terug-knop {
-            background-color: #6c757d;
-            color: white;
-            padding: 10px 20px;
-            text-decoration: none;
-            border-radius: 4px;
-            display: inline-block;
-        }
-        .terug-knop:hover {
-            background-color: #5a6268;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Nieuw Artikel Toevoegen</h1>
 
-        <?php if(count($foutmeldingen) > 0): ?>
-            <div class="foutmelding">
-                <?php foreach($foutmeldingen as $fout): ?>
-                    <p><?php echo $fout; ?></p>
-                <?php endforeach; ?>
-            </div>
-        <?php endif; ?>
+<!-- Artikel toevoegen formulier -->
+<div class="container my-5">
+    <h2 class="mb-4">Nieuw Artikel Toevoegen</h2>
 
-        <form method="POST">
-            <div class="form-groep">
-                <label for="naam">Naam: *</label>
-                <input type="text" id="naam" name="naam" 
-                       value="<?php echo isset($_POST['naam']) ? htmlspecialchars($_POST['naam']) : ''; ?>">
-            </div>
+    <!-- Foutmeldingen -->
+    <?php if(count($foutmeldingen) > 0): ?>
+        <div class="alert alert-danger">
+            <?php foreach($foutmeldingen as $fout): ?>
+                <p class="mb-1"><?php echo $fout; ?></p>
+            <?php endforeach; ?>
+        </div>
+    <?php endif; ?>
 
-            <div class="form-groep">
-                <label for="categorie_id">Categorie: *</label>
-                <select id="categorie_id" name="categorie_id">
-                    <option value="">-- Selecteer categorie --</option>
-                    <?php foreach($categorien as $cat): ?>
-                        <option value="<?php echo $cat['id']; ?>"
-                                <?php echo (isset($_POST['categorie_id']) && $_POST['categorie_id'] == $cat['id']) ? 'selected' : ''; ?>>
-                            <?php 
-                                echo htmlspecialchars($cat['categorie']);
-                                if($cat['subcategorie']) {
-                                    echo ' - ' . htmlspecialchars($cat['subcategorie']);
-                                }
-                                echo ' (' . htmlspecialchars($cat['code']) . ')';
-                            ?>
-                        </option>
-                    <?php endforeach; ?>
-                </select>
-            </div>
-
-            <div class="form-groep">
-                <label for="prijs">Prijs (ex. BTW): *</label>
-                <input type="number" id="prijs" name="prijs" step="0.01" 
-                       value="<?php echo isset($_POST['prijs']) ? htmlspecialchars($_POST['prijs']) : ''; ?>">
-                <div style="background-color: #e7f3ff; padding: 10px; border-radius: 4px; margin-top: 10px; font-size: 0.9em;" id="btw-info"></div>
-            </div>
-
-            <button type="submit" class="knop">Toevoegen</button>
-            <a href="artikelen.php" class="terug-knop">Terug</a>
-        </form>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="naam" class="form-label">Naam: <span class="text-danger">*</span></label>
+                        <input type="text" id="naam" name="naam" class="form-control"
+                               value="<?php echo isset($_POST['naam']) ? $_POST['naam'] : ''; ?>" required>
+                    </div>
+                    <div class="col-md-6">
+                        <label for="categorie_id" class="form-label">Categorie: <span class="text-danger">*</span></label>
+                        <select id="categorie_id" name="categorie_id" class="form-select" required>
+                            <option value="">-- Selecteer categorie --</option>
+                            <?php foreach($categorien as $cat): ?>
+                                <option value="<?php echo $cat['id']; ?>"
+                                        <?php echo (isset($_POST['categorie_id']) && $_POST['categorie_id'] == $cat['id']) ? 'selected' : ''; ?>>
+                                    <?php 
+                                        echo $cat['categorie'];
+                                        if($cat['subcategorie']) {
+                                            echo ' - ' . $cat['subcategorie'];
+                                        }
+                                        echo ' (' . $cat['code'] . ')';
+                                    ?>
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <label for="prijs" class="form-label">Prijs (ex. BTW): <span class="text-danger">*</span></label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input type="number" id="prijs" name="prijs" class="form-control" step="0.01"
+                                   value="<?php echo isset($_POST['prijs']) ? $_POST['prijs'] : ''; ?>" required>
+                        </div>
+                        <small id="btw-info" class="form-text text-muted"></small>
+                    </div>
+                </div>
+                
+                <div class="d-flex gap-2">
+                    <button type="submit" class="btn btn-primary">Artikel Toevoegen</button>
+                    <a href="artikelen.php" class="btn btn-secondary">Terug naar Overzicht</a>
+                </div>
+            </form>
+        </div>
     </div>
 
     <script>
@@ -181,5 +117,6 @@ if($_SERVER['REQUEST_METHOD'] == 'POST') {
         
         document.getElementById('prijs').addEventListener('input', berekenBTW);
     </script>
-</body>
-</html>
+</div>
+
+<?php include 'includes/footer.php'; ?>

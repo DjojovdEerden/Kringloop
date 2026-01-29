@@ -34,10 +34,18 @@ if (session_status() === PHP_SESSION_NONE) {
                         </ul>
                     </li>
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="/Kringloop/voorraad.php?type=magazijn" id="voorraadDropdown" role="button" data-bs-toggle="dropdown">Voorraad</a>
+                        <a class="nav-link dropdown-toggle" href="/Kringloop/admin/list_voorraad.php" id="voorraadDropdown" role="button" data-bs-toggle="dropdown">Voorraad</a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="/Kringloop/voorraad.php?type=magazijn">Magazijn beheer</a></li>
-                            <li><a class="dropdown-item" href="/Kringloop/voorraad.php?type=winkel">Winkel voorraad beheren</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/admin/list_voorraad.php">Voorraad Overzicht</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/admin/add_voorraad.php">Nieuwe Voorraad</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="/Kringloop/artikelen.php" id="artikelenDropdown" role="button" data-bs-toggle="dropdown">Artikelen</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Kringloop/artikelen.php">Artikelen Overzicht</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/artikel_toevoegen.php">Nieuw Artikel</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/categorie_toevoegen.php">Nieuwe Categorie</a></li>
                         </ul>
                     </li>
                     <?php if (isset($_SESSION['user_id']) && (int)($_SESSION['rol_id'] ?? 0) === 1): ?>

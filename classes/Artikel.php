@@ -4,10 +4,10 @@ class Artikel {
     public $categorie_id;
     public $naam;
     public $prijs_ex_btw;
-    public $db;
+    public $pdo;
 
     public function __construct($database) {
-        $this->db = $database;
+        $this->pdo = $database;
     }
 
     public function getAlleArtikelen() {
@@ -15,7 +15,7 @@ class Artikel {
                   FROM artikel 
                   LEFT JOIN categorie ON artikel.categorie_id = categorie.id 
                   ORDER BY artikel.id DESC";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->execute();
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
@@ -23,7 +23,7 @@ class Artikel {
     public function voegArtikelToe() {
         $query = "INSERT INTO artikel (categorie_id, naam, prijs_ex_btw) 
                   VALUES (:categorie_id, :naam, :prijs_ex_btw)";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':categorie_id', $this->categorie_id);
         $stmt->bindParam(':naam', $this->naam);
         $stmt->bindParam(':prijs_ex_btw', $this->prijs_ex_btw);
@@ -33,13 +33,13 @@ class Artikel {
     public function verwijderArtikel($id) {
         // Verwijder eerst gerelateerde voorraad records
         $queryVoorraad = "DELETE FROM voorraad WHERE artikel_id = :id";
-        $stmtVoorraad = $this->db->prepare($queryVoorraad);
+        $stmtVoorraad = $this->pdo->prepare($queryVoorraad);
         $stmtVoorraad->bindParam(':id', $id);
         $stmtVoorraad->execute();
         
         // Verwijder het artikel
         $query = "DELETE FROM artikel WHERE id = :id";
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         $stmt->bindParam(':id', $id);
         return $stmt->execute();
     }
@@ -60,7 +60,7 @@ class Artikel {
         
         $query .= " ORDER BY artikel.id DESC";
         
-        $stmt = $this->db->prepare($query);
+        $stmt = $this->pdo->prepare($query);
         
         if(!empty($zoekterm)) {
             $zoekterm_param = '%' . $zoekterm . '%';

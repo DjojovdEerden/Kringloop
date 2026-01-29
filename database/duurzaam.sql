@@ -342,6 +342,10 @@ INSERT INTO rollen (id, naam, beschrijving) VALUES
 (3, 'winkelpersoneel', 'Winkelpersoneel - Toegang tot verkoop en klant gerelateerde functionaliteiten'),
 (4, 'chauffeur', 'Chauffeur - Toegang tot planning en transport gerelateerde functionaliteiten');
 
+-- Voeg directie account toe (wachtwoord: admin123)
+INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd) VALUES
+(1, 'directie', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1);
+
 -- Voeg dummy gegevens toe aan personen-tabel
 INSERT INTO personen (id, type, voornaam, achternaam, adres, plaats, postcode, email, telefoon, geboortedatum) VALUES
 (1, 'klant', 'Piet', 'Pietersen', 'Dorpsstraat 2', 'Rotterdam', '3012AB', 'piet@example.com', '0698765432', '1985-03-10'),
