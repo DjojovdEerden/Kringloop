@@ -30,7 +30,11 @@ CREATE TABLE `categorie` (
 
   `id` int NOT NULL,
 
-  `categorie` varchar(255) NOT NULL
+  `categorie` varchar(255) NOT NULL,
+
+  `subcategorie` VARCHAR(100),
+
+  `code` VARCHAR(20) UNIQUE
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
@@ -48,7 +52,19 @@ CREATE TABLE `artikel` (
 
   `naam` varchar(255) NOT NULL,
 
-  `prijs_ex_btw` decimal(10,2) NOT NULL
+  `omschrijving` TEXT,
+
+  `merk` VARCHAR(100),
+
+  `kleur` VARCHAR(50),
+
+  `afmeting_maat` VARCHAR(50),
+
+  `prijs_ex_btw` decimal(10,2) NOT NULL,
+
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
@@ -300,4 +316,110 @@ ALTER TABLE `voorraad`
  
 COMMIT;
 
+<<<<<<< Updated upstream
  
+=======
+-- Voeg rollen toe
+INSERT INTO rollen (id, naam, beschrijving) VALUES
+(1, 'directie', 'Directie - Volledige toegang tot alle functionaliteiten'),
+(2, 'medewerker', 'Medewerker - Toegang tot magazijn, voorraad en algemene functionaliteiten'),
+(3, 'winkelpersoneel', 'Winkelpersoneel - Toegang tot verkoop en klant gerelateerde functionaliteiten'),
+(4, 'chauffeur', 'Chauffeur - Toegang tot planning en transport gerelateerde functionaliteiten');
+
+-- Voeg dummy gegevens toe aan personen-tabel
+INSERT INTO personen (id, type, voornaam, achternaam, adres, plaats, postcode, email, telefoon, geboortedatum) VALUES
+(1, 'klant', 'Piet', 'Pietersen', 'Dorpsstraat 2', 'Rotterdam', '3012AB', 'piet@example.com', '0698765432', '1985-03-10'),
+(2, 'klant', 'Anna', 'de Vries', 'Marktplein 15', 'Den Haag', '2511CD', 'anna.devries@example.com', '0634567890', '1992-07-22'),
+(3, 'leverancier', 'Jan', 'Jansen', 'Hoofdstraat 1', 'Amsterdam', '1001AB', 'jan.jansen@example.com', '0612345678', '1980-05-15'),
+(4, 'leverancier', 'Maria', 'Peters', 'Kerkstraat 25', 'Utrecht', '3511BT', 'maria.peters@example.com', '0687654321', '1975-11-22');
+
+-- Voeg de nieuwe categorieën toe met hoofd- en subcategorieën
+INSERT INTO `categorie` (`id`, `categorie`, `subcategorie`, `code`) VALUES
+-- Kleding
+(1, 'Kleding', 'Dameskleding', 'KL-DA'),
+(2, 'Kleding', 'Herenkleding', 'KL-HE'),
+(3, 'Kleding', 'Kinderkleding', 'KL-KI'),
+
+-- Meubels
+(4, 'Meubels', 'Tafels', 'ME-TA'),
+(5, 'Meubels', 'Stoelen', 'ME-ST'),
+(6, 'Meubels', 'Eettafels', 'ME-ET'),
+(7, 'Meubels', 'Salontafels', 'ME-SA'),
+(8, 'Meubels', 'Bankstel', 'ME-BA'),
+(9, 'Meubels', 'Dressoir', 'ME-DR'),
+(10, 'Meubels', 'Kaptafels', 'ME-KA'),
+
+-- Bedden
+(11, 'Bedden', '1-persoons', 'BE-1P'),
+(12, 'Bedden', '2-persoons', 'BE-2P'),
+
+-- Kledingkasten
+(13, 'Kledingkasten', '1-deurs', 'KK-1D'),
+(14, 'Kledingkasten', '2-deurs', 'KK-2D'),
+(15, 'Kledingkasten', '3-deurs', 'KK-3D'),
+
+-- Overige
+(16, 'Spiegels', NULL, 'SP'),
+(17, 'Kapstokken', NULL, 'KS'),
+(18, 'Garderobekasten', NULL, 'GK'),
+(19, 'Schoenenkasten', NULL, 'SK'),
+
+-- Witgoed
+(20, 'Witgoed', 'Wasmachines', 'WG-WA'),
+(21, 'Witgoed', 'Gasfornuizen', 'WG-GF'),
+(22, 'Witgoed', 'Vaatwassers', 'WG-VW'),
+(23, 'Witgoed', 'Koelkasten', 'WG-KO'),
+(24, 'Witgoed', 'Diepvriezers', 'WG-DV'),
+
+-- Bruingoed
+(25, 'Bruingoed', 'Radio\'s', 'BG-RA'),
+(26, 'Bruingoed', 'Televisietoestellen', 'BG-TV'),
+(27, 'Bruingoed', 'Ander electronisch apparaten', 'BG-AN'),
+
+-- Grijsgoed
+(28, 'Grijsgoed', 'ICT gerelateerde artikelen', 'GG-IC'),
+
+-- Serviesgoed
+(29, 'Serviesgoed', 'Glazen', 'SG-GL'),
+(30, 'Serviesgoed', 'Borden', 'SG-BO'),
+(31, 'Serviesgoed', 'Bestek', 'SG-BE'),
+
+-- Boeken
+(32, 'Boeken', NULL, 'BK');
+
+-- Voeg sample artikelen toe
+INSERT INTO `artikel` (`categorie_id`, `naam`, `prijs_ex_btw`) VALUES
+(1, 'T-shirt dames', 4.13),
+(2, 'Spijkerbroek heren', 20.66),
+(6, 'Eettafel eiken', 123.97),
+(8, 'Bankstel 3-zits', 289.26),
+(20, 'Wasmachine', 165.29),
+(26, 'LED Televisie', 148.76),
+(14, 'Kledingkast 2-deurs', 144.63);
+
+-- Voeg statussen toe
+INSERT INTO `status` (`id`, `status`) VALUES
+(1, 'In magazijn'),
+(2, 'In winkel'),
+(3, 'Verkocht'),
+(4, 'Gereserveerd'),
+(5, 'In reparatie');
+
+-- Voeg voorraad toe voor de artikelen
+INSERT INTO `voorraad` (`artikel_id`, `locatie`, `aantal`, `status_id`, `ingeboekt_op`) VALUES
+(1, 'Winkel A1', 15, 2, NOW()),
+(2, 'Magazijn B2', 8, 1, NOW()),
+(3, 'Winkel C3', 3, 2, NOW()),
+(4, 'Magazijn D4', 2, 1, NOW()),
+(5, 'Winkel E5', 4, 2, NOW()),
+(6, 'Magazijn F6', 5, 1, NOW()),
+(7, 'Winkel G7', 1, 4, NOW());
+
+-- Voeg planning dummy data toe
+INSERT INTO planning (id, artikel_id, persoon_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES
+(1, 1, 1, 'AB-123-CD', 'ophalen', '2026-02-01 10:00:00', 'Ophalen van T-shirt'),
+(2, 3, 2, 'EF-456-GH', 'bezorgen', '2026-02-02 14:00:00', 'Bezorgen van eettafel');
+ 
+COMMIT;
+
+>>>>>>> Stashed changes
