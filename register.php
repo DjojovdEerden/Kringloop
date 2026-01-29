@@ -2,14 +2,23 @@
 
 require_once 'includes/db.php';
 
+// Sessie starten
+session_start();
+
+// Alleen rol_id 1 mag registeren
+if (!isset($_SESSION['user_id']) || (int)($_SESSION['rol_id'] ?? 0) !== 1) {
+    header('Location: login.php');
+    exit;
+}
+
 // variabelen 
 $roles = [];
 $message = '';
 
 // haalt de rollen op uit de database van de rollen tabel
 try {
-    $rolesStmt = $pdo->query("SELECT id, naam FROM rollen ORDER BY naam");
-    $roles = $rolesStmt->fetchAll(PDO::FETCH_ASSOC);
+    $rolesStmt = $pdo->query(query: "SELECT id, naam FROM rollen ORDER BY naam");
+    $roles = $rolesStmt->fetchAll(mode: PDO::FETCH_ASSOC);
 } catch (PDOException $e) {
     $message = "Fout bij laden van rollen: " . $e->getMessage();
 }
@@ -18,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // haalt de input op van de gebruiker
     $gebruikersnaam = trim(string: $_POST['gebruikersnaam'] ?? '');
     $wachtwoord = $_POST['wachtwoord'] ?? '';
-    $roleId = $_POST['role_id'] ?? '';
+    $roleId = $_POST['rol_id'] ?? '';
 
     // verificeert of alle velden zijn ingevuld 
     if ($gebruikersnaam === '' || $wachtwoord === '' || $roleId === '') {
@@ -40,10 +49,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
                 // voegt de nieuwe gebruiker toe aan de database in de gebruiker tabel 
                 $stmt = $pdo->prepare(
-                    "INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd)
+                    query: "INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd)
                      VALUES (?, ?, ?, ?, 0)"
                 );
-                $stmt->execute([$nextId, $gebruikersnaam, $hashedPassword, (int)$roleId]);
+                 $stmt->execute(params: [$nextId, $gebruikersnaam, $hashedPassword, (int)$roleId]);
 
                 $message = "Registratie gelukt!";
             }
@@ -55,34 +64,34 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
 ?>
 
-<!DOCTYPE html>
-<html lang="nl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registeren</title>
-</head>
-<body>
-    <h1>Registeren</h1>
+<?php
+$pageTitle = 'Registreren';
+include 'includes/header.php';
+?>
+
+<div class="container my-5" style="max-width: 640px;">
+    <h1 class="mb-4">Registeren</h1>
 
     <?php if ($message !== ''): ?>
-        <p><?php echo htmlspecialchars(string: $message, flags: ENT_QUOTES, encoding: 'UTF-8'); ?></p>
+        <div class="alert alert-info" role="alert">
+            <?php echo htmlspecialchars(string: $message, flags: ENT_QUOTES, encoding: 'UTF-8'); ?>
+        </div>
     <?php endif; ?>
 
     <form method="post" action="">
-        <div>
-            <label for="gebruikersnaam">Gebruikersnaam</label>
-            <input type="text" id="gebruikersnaam" name="gebruikersnaam" required>
+        <div class="mb-3">
+            <label for="gebruikersnaam" class="form-label">Gebruikersnaam</label>
+            <input type="text" id="gebruikersnaam" name="gebruikersnaam" class="form-control" required>
         </div>
 
-        <div>
-            <label for="wachtwoord">Wachtwoord</label>
-            <input type="password" id="wachtwoord" name="wachtwoord" required>
+        <div class="mb-3">
+            <label for="wachtwoord" class="form-label">Wachtwoord</label>
+            <input type="password" id="wachtwoord" name="wachtwoord" class="form-control" required>
         </div>
 
-        <div>
-            <label for="role_id">Rol</label>
-            <select id="role_id" name="role_id" required>
+        <div class="mb-3">
+            <label for="rol_id" class="form-label">Rol</label>
+            <select id="rol_id" name="rol_id" class="form-select" required>
                 <option value="">Kies een rol</option>
                 <?php foreach ($roles as $role): ?>
                     <option value="<?php echo (int)$role['id']; ?>">
@@ -92,7 +101,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             </select>
         </div>
 
-        <button type="submit">Registreren</button>
+        <button type="submit" class="btn btn-primary-custom">Registreren</button>
     </form>
-</body>
-</html>
+</div>
+
+<?php include 'includes/footer.php'; ?>
