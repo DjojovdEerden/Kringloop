@@ -1,29 +1,39 @@
 <?php
+// Database connectie laden
 require_once '../includes/db.php';
 
+// Haal alle planning data op
+// Haal alle planning data op
 $stmt = $pdo->query('
     SELECT p.*, k.naam AS klant_naam, k.adres AS klant_adres, a.naam AS artikel_naam
     FROM planning p
     JOIN klant k ON p.klant_id = k.id
     JOIN artikel a ON p.artikel_id = a.id
 ');
+// Converteer naar array
 $planningen = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 
 <?php
+// Pagina configuratie instellen
 $pageTitle = 'Planning Overzicht';
 include '../includes/header.php';
 ?>
+
+<!-- Planning overzicht tabel -->
 
 <div class="container my-5">
     <h2 class="mb-4 text-center">Planning Overzicht</h2>
     <div class="card">
         <div class="card-body">
+            <!-- Zoek en filter opties -->
             <div class="d-flex justify-content-between mb-3">
                 <input type="text" class="form-control w-25" placeholder="Zoek planning...">
                 <button class="btn btn-secondary">Filters wissen</button>
             </div>
+            <!-- Planning data tabel -->
             <table class="table table-hover">
+                <!-- Tabel koppen definitie -->
                 <thead class="table-light">
                     <tr>
                         <th>ID</th>
@@ -38,6 +48,7 @@ include '../includes/header.php';
                         <th>Klant Adres</th>
                     </tr>
                 </thead>
+                <!-- Planning records weergeven -->
                 <tbody>
                     <?php foreach ($planningen as $planning): ?>
                         <tr>
@@ -60,5 +71,6 @@ include '../includes/header.php';
 </div>
 
 <?php
+// Footer laden
 include '../includes/footer.php';
 ?>

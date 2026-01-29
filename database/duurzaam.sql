@@ -54,6 +54,18 @@ CREATE TABLE `artikel` (
  
 -- --------------------------------------------------------
 
+-- Tabelstructuur voor tabel `rollen`
+
+-- --------------------------------------------------------
+
+CREATE TABLE `rollen` (
+  `id` int NOT NULL,
+  `naam` varchar(50) NOT NULL,
+  `beschrijving` text
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- --------------------------------------------------------
+
 -- Tabelstructuur voor tabel `gebruiker`
 
 -- --------------------------------------------------------
@@ -66,7 +78,7 @@ CREATE TABLE `gebruiker` (
 
   `wachtwoord` varchar(255) NOT NULL,
 
-  `rollen` text NOT NULL,
+  `rol_id` int DEFAULT NULL,
 
   `is_geverifieerd` tinyint(1) NOT NULL
 
@@ -74,24 +86,23 @@ CREATE TABLE `gebruiker` (
  
 -- --------------------------------------------------------
 
--- Tabelstructuur voor tabel `klant`
+-- Tabelstructuur voor tabel `personen`
 
 -- --------------------------------------------------------
- 
-CREATE TABLE `klant` (
 
+CREATE TABLE `personen` (
   `id` int NOT NULL,
-
-  `naam` varchar(255) NOT NULL,
-
+  `type` enum('klant','leverancier') NOT NULL DEFAULT 'klant',
+  `voornaam` varchar(100) NOT NULL,
+  `achternaam` varchar(100) NOT NULL,
   `adres` varchar(255) NOT NULL,
-
-  `plaats` varchar(255) NOT NULL,
-
-  `telefoon` varchar(255) NOT NULL,
-
-  `email` varchar(255) NOT NULL
-
+  `plaats` varchar(100) NOT NULL,
+  `postcode` varchar(10) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `telefoon` varchar(20) NOT NULL,
+  `geboortedatum` date DEFAULT NULL,
+  `datum_ingevoerd` datetime DEFAULT CURRENT_TIMESTAMP,
+  `actief` tinyint(1) DEFAULT 1
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
  
 -- --------------------------------------------------------
@@ -106,7 +117,7 @@ CREATE TABLE `planning` (
 
   `artikel_id` int NOT NULL,
 
-  `klant_id` int NOT NULL,
+  `persoon_id` int NOT NULL,
 
   `kenteken` varchar(255) NOT NULL,
 
@@ -142,7 +153,7 @@ CREATE TABLE `verkopen` (
 
   `id` int NOT NULL,
 
-  `klant_id` int NOT NULL,
+  `persoon_id` int NOT NULL,
 
   `artikel_id` int NOT NULL,
 
@@ -181,6 +192,15 @@ CREATE TABLE `voorraad` (
 ALTER TABLE `categorie`
 
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `rollen`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `naam` (`naam`);
+
+ALTER TABLE `personen`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `type` (`type`),
+  ADD KEY `email` (`email`);
  
 ALTER TABLE `artikel`
 
@@ -188,19 +208,11 @@ ALTER TABLE `artikel`
 
   ADD KEY `categorie_id` (`categorie_id`);
  
-ALTER TABLE `gebruiker`
-
-  ADD PRIMARY KEY (`id`);
- 
-ALTER TABLE `klant`
-
-  ADD PRIMARY KEY (`id`);
- 
 ALTER TABLE `planning`
 
   ADD PRIMARY KEY (`id`),
 
-  ADD KEY `klant_id` (`klant_id`);
+  ADD KEY `persoon_id` (`persoon_id`);
  
 ALTER TABLE `status`
 
@@ -210,7 +222,7 @@ ALTER TABLE `verkopen`
 
   ADD PRIMARY KEY (`id`),
 
-  ADD KEY `klant_id` (`klant_id`),
+  ADD KEY `persoon_id` (`persoon_id`),
 
   ADD KEY `artikel_id` (`artikel_id`);
  
@@ -231,12 +243,14 @@ ALTER TABLE `voorraad`
 ALTER TABLE `categorie`
 
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
- 
-ALTER TABLE `artikel`
 
+ALTER TABLE `rollen`
+  MODIFY `id` int NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+ALTER TABLE `personen`
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
  
-ALTER TABLE `klant`
+ALTER TABLE `artikel`
 
   MODIFY `id` int NOT NULL AUTO_INCREMENT;
  
@@ -267,6 +281,10 @@ ALTER TABLE `artikel`
   ADD CONSTRAINT `artikel_ibfk_1`
 
   FOREIGN KEY (`categorie_id`) REFERENCES `categorie` (`id`);
+
+ALTER TABLE `gebruiker`
+  ADD CONSTRAINT `fk_gebruiker_rol`
+  FOREIGN KEY (`rol_id`) REFERENCES `rollen` (`id`) ON DELETE SET NULL;
  
 ALTER TABLE `planning`
 
@@ -276,13 +294,13 @@ ALTER TABLE `planning`
 
   ADD CONSTRAINT `planning_ibfk_2`
 
-  FOREIGN KEY (`klant_id`) REFERENCES `klant` (`id`);
+  FOREIGN KEY (`persoon_id`) REFERENCES `personen` (`id`);
  
 ALTER TABLE `verkopen`
 
   ADD CONSTRAINT `verkopen_ibfk_1`
 
-  FOREIGN KEY (`klant_id`) REFERENCES `klant` (`id`),
+  FOREIGN KEY (`persoon_id`) REFERENCES `personen` (`id`),
 
   ADD CONSTRAINT `verkopen_ibfk_2`
 
@@ -300,6 +318,20 @@ ALTER TABLE `voorraad`
  
 COMMIT;
 
+-- Voeg rollen toe
+INSERT INTO rollen (id, naam, beschrijving) VALUES
+(1, 'directie', 'Directie - Volledige toegang tot alle functionaliteiten'),
+(2, 'medewerker', 'Medewerker - Toegang tot magazijn, voorraad en algemene functionaliteiten'),
+(3, 'winkelpersoneel', 'Winkelpersoneel - Toegang tot verkoop en klant gerelateerde functionaliteiten'),
+(4, 'chauffeur', 'Chauffeur - Toegang tot planning en transport gerelateerde functionaliteiten');
+
+-- Voeg dummy gegevens toe aan personen-tabel
+INSERT INTO personen (id, type, voornaam, achternaam, adres, plaats, postcode, email, telefoon, geboortedatum) VALUES
+(1, 'klant', 'Piet', 'Pietersen', 'Dorpsstraat 2', 'Rotterdam', '3012AB', 'piet@example.com', '0698765432', '1985-03-10'),
+(2, 'klant', 'Anna', 'de Vries', 'Marktplein 15', 'Den Haag', '2511CD', 'anna.devries@example.com', '0634567890', '1992-07-22'),
+(3, 'leverancier', 'Jan', 'Jansen', 'Hoofdstraat 1', 'Amsterdam', '1001AB', 'jan.jansen@example.com', '0612345678', '1980-05-15'),
+(4, 'leverancier', 'Maria', 'Peters', 'Kerkstraat 25', 'Utrecht', '3511BT', 'maria.peters@example.com', '0687654321', '1975-11-22');
+
 -- Voeg dummy gegevens toe aan de categorie-tabel
 INSERT INTO categorie (id, categorie) VALUES
 (1, 'Meubels'),
@@ -310,13 +342,8 @@ INSERT INTO artikel (id, categorie_id, naam, prijs_ex_btw) VALUES
 (1, 1, 'Fiets', 100.00),
 (2, 1, 'Stoel', 50.00);
 
--- Voeg dummy gegevens toe aan de klant-tabel
-INSERT INTO klant (id, naam, adres, plaats, telefoon, email) VALUES
-(1, 'Jan Jansen', 'Hoofdstraat 1', 'Amsterdam', '0612345678', 'jan@example.com'),
-(2, 'Piet Pietersen', 'Dorpsstraat 2', 'Rotterdam', '0687654321', 'piet@example.com');
-
 -- Voeg dummy gegevens toe aan de planning-tabel
-INSERT INTO planning (id, artikel_id, klant_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES
+INSERT INTO planning (id, artikel_id, persoon_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES
 (1, 1, 1, 'AB-123-CD', 'ophalen', '2026-02-01 10:00:00', 'Ophalen van fiets'),
 (2, 2, 2, 'EF-456-GH', 'bezorgen', '2026-02-02 14:00:00', 'Bezorgen van stoel');
 

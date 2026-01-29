@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/database/config/database.php';
+require_once 'includes/db.php';
 
 // Sessie starten
 session_start();
@@ -38,13 +38,13 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
         try {
             // controleer of gebruikersnaam al bestaat
-            $checkStmt = $pdo->prepare(query: "SELECT 1 FROM gebruiker WHERE gebruikersnaam = ? LIMIT 1");
+            $checkStmt = $pdo->prepare("SELECT 1 FROM gebruiker WHERE gebruikersnaam = ? LIMIT 1");
             $checkStmt->execute(params: [$gebruikersnaam]);
             if ($checkStmt->fetch()) {
                 $message = "Gebruikersnaam bestaat al. Kies een andere.";
             } else {
                 // voorkomt dubbele gebruikersnamen 
-                $idStmt = $pdo->query(query: "SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM gebruiker");
+                $idStmt = $pdo->query("SELECT IFNULL(MAX(id), 0) + 1 AS next_id FROM gebruiker");
                 $nextId = (int)$idStmt->fetchColumn();
 
                 // voegt de nieuwe gebruiker toe aan de database in de gebruiker tabel 
