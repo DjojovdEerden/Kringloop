@@ -1,0 +1,35 @@
+:root {
+    --primary-blue: #3366CC;
+    --hover-blue: #2952A3;
+}
+
+.card-custom {
+    border-radius: 15px;
+    border: 1px solid #ddd;
+    padding: 30px;
+    min-height: 200px;
+}
+
+.btn-primary-custom {
+    background-color: var(--primary-blue);
+    border: none;
+    border-radius: 25px;
+    padding: 12px 40px;
+    color: white;
+    font-weight: 500;
+}
+
+.btn-primary-custom:hover {
+    background-color: var(--hover-blue);
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    object-fit: contain;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
