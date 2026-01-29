@@ -342,9 +342,12 @@ INSERT INTO rollen (id, naam, beschrijving) VALUES
 (3, 'winkelpersoneel', 'Winkelpersoneel - Toegang tot verkoop en klant gerelateerde functionaliteiten'),
 (4, 'chauffeur', 'Chauffeur - Toegang tot planning en transport gerelateerde functionaliteiten');
 
--- Voeg directie account toe (wachtwoord: admin123)
+-- Voeg standaard gebruiker accounts toe
+-- Directie account (wachtwoord: admin123)
+-- Medewerker account (wachtwoord: medewerker123)
 INSERT INTO gebruiker (id, gebruikersnaam, wachtwoord, rol_id, is_geverifieerd) VALUES
-(1, 'directie', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1);
+(1, 'directie', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 1),
+(2, 'medewerker', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, 1);
 
 -- Voeg dummy gegevens toe aan personen-tabel
 INSERT INTO personen (id, type, voornaam, achternaam, adres, plaats, postcode, email, telefoon, geboortedatum) VALUES
