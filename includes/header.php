@@ -40,6 +40,13 @@ if (session_status() === PHP_SESSION_NONE) {
                             <li><a class="dropdown-item" href="/Kringloop/admin/list_personen.php">Personen Overzicht</a></li>
                         </ul>
                     </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">Voorraad</a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/Kringloop/admin/add_voorraad.php">Nieuwe Voorraad</a></li>
+                            <li><a class="dropdown-item" href="/Kringloop/admin/list_voorraad.php">Voorraad Overzicht</a></li>
+                        </ul>
+                    </li>
                     <li class="nav-item"><a class="nav-link" href="/Kringloop/voorraad.php">Voorraad</a></li>
                     <li class="nav-item"><a class="nav-link" href="/Kringloop/beheer.php">Beheer</a></li>
                     <li class="nav-item dropdown">

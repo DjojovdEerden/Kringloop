@@ -337,10 +337,19 @@ INSERT INTO categorie (id, categorie) VALUES
 (1, 'Meubels'),
 (2, 'Vervoer');
 
--- Voeg dummy gegevens toe aan de artikelen-tabel
+-- Voeg dummy gegevens toe aan artikelen-tabel
 INSERT INTO artikel (id, categorie_id, naam, prijs_ex_btw) VALUES
 (1, 1, 'Fiets', 100.00),
 (2, 1, 'Stoel', 50.00);
+
+-- Voeg statussen toe aan status-tabel
+INSERT INTO status (id, status) VALUES
+(1, 'Nieuw'),
+(2, 'Gebruikt - Goed'),
+(3, 'Gebruikt - Matig'),
+(4, 'Reparatie nodig'),
+(5, 'Te verkopen'),
+(6, 'Verkocht');
 
 -- Voeg dummy gegevens toe aan de planning-tabel
 INSERT INTO planning (id, artikel_id, persoon_id, kenteken, ophalen_of_bezorgen, afspraak_op, omschrijving) VALUES
