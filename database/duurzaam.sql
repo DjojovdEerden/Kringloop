@@ -334,6 +334,7 @@ ALTER TABLE `voorraad`
  
 COMMIT;
 
+ 
 -- Voeg rollen toe
 INSERT INTO rollen (id, naam, beschrijving) VALUES
 (1, 'directie', 'Directie - Volledige toegang tot alle functionaliteiten'),
